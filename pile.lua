@@ -23,14 +23,10 @@ function PileClass:new(xPos, yPos, cascades, type)
     pile.size = Vector(60, pileBaseHeight)
   else
     pile.size = Vector(60, pileBaseHeight*5)
-    --pile.position = Vector(xPos, yPos + pile.size.y/2)
   end
   
   pile.cards = {} --huh, this worked as self.cards when I wasn't trying to access .cards from main, but when I did it threw an error which changing it to pile.cards fixed. Why did it work partially before?
-  pile.top = nil--{1,2}
-  --pile.grabbedFrom = false
-  
-  --print(#pile.cards)
+  pile.top = nil
   
   return pile
 end
@@ -40,21 +36,15 @@ function PileClass:draw()
   local xOffset = self.size.x/2
   local yOffset = self.size.y/2
   if self.cascade == true then
-    love.graphics.rectangle("line", self.position.x - xOffset, self.position.y - yOffset/5, self.size.x, self.size.y*2, 6, 6) --using a constant instead of using self.size.y doesn't stop the zoomies - how does that work??
+    love.graphics.rectangle("line", self.position.x - xOffset, self.position.y - yOffset/5, self.size.x, self.size.y*2, 6, 6)
   else
     love.graphics.rectangle("line", self.position.x - xOffset, self.position.y - yOffset, self.size.x, self.size.y, 6, 6)
   end
 end
 
-function PileClass:push(addedCard) --5/6 3:19 pm: changing piles to store the actual card objects, not just their values and suits
+function PileClass:push(addedCard)
   table.insert(self.cards, 1, addedCard) --insert a new card at the top of the table
   self.top = addedCard
-  --print(#self.cards)
-  print("new top card: " .. self.cards[1].value)
-  --print("cardVal is " .. cardVal)
-  --for _, card in ipairs(self.cards) do
-  --  print("card " .. _ .. " in pile: " .. ": " .. card.value .. ", " .. card.suit)
-  --end
 end
 
 function PileClass:pop()
@@ -63,9 +53,7 @@ function PileClass:pop()
 end
 
 function PileClass:findCard(value, suit)
-  --print("looking for card with " .. value .. "and" .. suit)
   for _, card in ipairs(self.cards) do
-    --print("checking index ".._)
     if card.value == value and card.suit == suit then
       return _
     end
@@ -74,22 +62,17 @@ function PileClass:findCard(value, suit)
 end
 
 function PileClass:checkForMouseOver(grabber)
-  --print("mouseover check in PileClass") 
   local mousePos = grabber.currentMousePos --local vs not using local?
   local isMouseOver = 
     mousePos.x > self.position.x - self.size.x/2 and
     mousePos.x < self.position.x + self.size.x/2 and
-    mousePos.y > self.position.y - pileBaseHeight and --self.size.y/2
+    mousePos.y > self.position.y - pileBaseHeight and
     --pileBaseHeight to account for the twe possible sizes of the piles
     mousePos.y < self.position.y + self.size.y/2
   
   if isMouseOver then
-    --if self.top ~= nil then
-      --print("mousing over pile with top card " .. self.top.value .. " of " .. self.top.suit)
-    --end
     return self
   else
-    --print("no pile below mouse")
     return nil
   end
 end
@@ -101,7 +84,6 @@ function PileClass:checkForCardOver(grabber)
     (mousePos.x - cardWidth/2 > self.position.x - self.size.x/2 and mousePos.x - cardWidth/2 < self.position.x + self.size.x/2 and mousePos.y + cardLength/2 > self.position.y - self.size.y/2 and mousePos.y + cardLength/2 < self.position.y + self.size.y/2) --bottom left corner is within pile
   
   if isCardOver then
-    print("card over pile")
     return self
   else
     return nil
